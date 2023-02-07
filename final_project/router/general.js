@@ -58,10 +58,10 @@ public_users.get('/author/:author',function (req, res) {
         var val = books[key];
         if(val.author === author) {
             book_results_key =  `Index ${key}:`;
-            book_results_val.push(JSON.stringify(books[key]));
+            book_results_val.push(`${book_results_key} ${JSON.stringify(books[key])}`);
         }
       });
-    res.send(`Result for author ${author}: \n ----\n ${book_results_key} ${book_results_val} \n`);
+    res.send(`Result for author ${author}: \n ----\n ${book_results_val} \n`);
 });
 
 // Get all books based on title
@@ -73,10 +73,10 @@ public_users.get('/title/:title',function (req, res) {
         var val = books[key];
         if(val.title === title) {
             book_results_key = `Index ${key}:`;
-            book_results_val.push(JSON.stringify(books[key]));
+            book_results_val.push(`${book_results_key} ${JSON.stringify(books[key])}`);
         }
       });
-    res.send(`Result for title ${title}: \n ----\n ${book_results_key} ${book_results_val} \n`);
+    res.send(`Result for title ${title}: \n ----\n ${book_results_val} \n`);
 });
 
 //  Get book review
@@ -89,10 +89,10 @@ public_users.get('/review/:isbn',function (req, res) {
         var val = books[key];
         if(val.isbn === isbn) {
             book_results_key = `Index ${key}:`;
-            book_results_review.push(JSON.stringify(books[key].reviews));
+            book_results_review.push(`${book_results_key} ${JSON.stringify(books[key].reviews)}`);
         }
       });
-    res.send(`Reviews for ISBN ${isbn}: \n ---- \n ${book_results_key} ${book_results_review} \n`);
+    res.send(`Reviews for ISBN ${isbn}: \n ---- \n ${book_results_review} \n`);
 
 });
 
