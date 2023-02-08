@@ -89,18 +89,18 @@ public_users.get('/title/:title',function (req, res) {
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
     const isbn = req.params.isbn;
-    let book_results_key = "None found";
-    let book_results_review = [];
-    Object.keys(books).forEach(function(key) {
-        //iterate, then upon finding the match, push it onto book_results
-        var val = books[key];
-        if(val.isbn === isbn) {
-            book_results_key = `Index ${key}:`;
-            book_results_review.push(`${book_results_key} ${JSON.stringify(books[key].reviews)}\n`);
-        }
+    const get_book_reviews = new Promise((resolve, reject) => {
+        let book_results_review = [];
+        Object.keys(books).forEach(function(key) {
+            var val = books[key];
+            if(val.isbn === isbn) {
+                book_results_review.push(`${JSON.stringify(books[key].reviews)}`);
+            }
+        });
+        resolve(res.send(JSON.stringify({book_results_review}, null, 4)));
       });
-    res.send(`Reviews for ISBN ${isbn}: \n ---- \n ${book_results_review} \n`);
 
+      get_book_reviews.then(() => console.log("Fetched book reviews by ISBN"));
 });
 
 module.exports.general = public_users;
