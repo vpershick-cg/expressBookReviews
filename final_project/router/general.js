@@ -20,7 +20,7 @@ public_users.post("/register", (req,res) => {
             return res.json({message: "Error, username already exists"});
         }
     }
-    //If we made it this far, user is assumed to be valid. Create key value pair, push onto users object 
+    //If checks are passed, create key value pair and push onto users object 
     users.push({"username":username, "password":password});
     return res.status(200).send("User successfully registered");
 });

@@ -47,20 +47,27 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
 
-    const username = req.session.user;//get username stored in session...
+    const username = req.user.data;
     const isbn = req.params.isbn;
     const review_content = req.body.review;
     
     //find the book by ISBN
-    let book_results_review = [];
     Object.keys(books).forEach(function(key) {
         var val = books[key];
         if(val.isbn === isbn) {
             //if review is being added to same ISBN by same user, modify existing review
-
+            //  remove the old review and then push on the new review 
+            let existing_review = books[key].reviews.filter((review) => review.username === username);
+            if(existing_review.length > 0) {
+                console.log("Found existing review by this username");
+                books[key].reviews = books[key].reviews.filter((review) => review.username !== username);
+                books[key].reviews.push({"username":username, "review":review_content});
+            }
             //otherwise, find book by the ISBN and add the review on
-            // books[key].reviews.push("my new review");
-            return res.status(300).json({message: books[key].reviews});//DEBUG
+            else {
+                books[key].reviews.push({"username":username, "review":review_content});
+            }
+            return res.json(books[key].reviews);
         }
     });
     return res.status(300).json({message: "Error, could not update reviews"});
@@ -69,7 +76,24 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 // Delete a book review
 regd_users.delete("/auth/review/:isbn", (req, res) => {
     //user can only delete reviews created by user, and not those of other users 
-    return res.status(300).json({message: "Delete book review. Yet to be implemented"});
+    //assuming one review per user, identified by the username
+    const username = req.user.data;
+    const isbn = req.params.isbn;
+     
+    //find the book by ISBN
+    Object.keys(books).forEach(function(key) {
+        var val = books[key];
+        if(val.isbn === isbn) {
+            let num_reviews = books[key].reviews.length;
+            //search the reviews for one belonging to the user, if found then delete it 
+            books[key].reviews = books[key].reviews.filter((review) => review.username !== username);
+            //if review was successfully removed
+            if(books[key].reviews.length < num_reviews) {
+                return res.status(300).json({message: `Deleted review by ${username}`});
+            }
+        }
+    });
+    return res.status(300).json({message: "Error, could not delete review"});
 });
 
 module.exports.authenticated = regd_users;
